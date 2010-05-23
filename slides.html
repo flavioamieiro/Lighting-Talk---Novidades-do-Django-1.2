@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Novidades do Django 1.2 &mdash; Novidades do Django 1.2 v1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Novidades do Django 1.2 v1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">Novidades do Django 1.2 v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="novidades-do-django-1-2">
+<h1>Novidades do Django 1.2<a class="headerlink" href="#novidades-do-django-1-2" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Suporte a mútiplos bancos de dados</li>
+</ul>
+<ul class="simple">
+<li>Validação de models</li>
+</ul>
+<ul class="simple">
+<li>Framework de mensagens</li>
+</ul>
+<ul class="simple">
+<li>Proteção contra CSRF</li>
+</ul>
+<ul class="simple">
+<li>Mudanças no contrib.auth</li>
+</ul>
+<ul class="simple">
+<li>Templatetag &#8216;if&#8217; mais esperta</li>
+</ul>
+<ul class="simple">
+<li>Mudanças no admin</li>
+</ul>
+<ul class="simple">
+<li>E mais ...</li>
+</ul>
+</div>
+<div class="section" id="multiplos-bancos-de-dados">
+<h1>Múltiplos bancos de dados<a class="headerlink" href="#multiplos-bancos-de-dados" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Escalabilidade</li>
+</ul>
+<ul class="simple">
+<li>Integração com outras aplicações</li>
+</ul>
+<ul class="simple">
+<li>Não é possível manter modelos relacionados (através de
+ForeignKey ou many-to-many) em bancos diferentes</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h1>Múltiplos bancos de dados<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;NAME&#39;</span><span class="p">:</span> <span class="s">&#39;app_data&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;django.db.backends.postgresql_psycopg2&#39;</span><span class="p">,</span>
+        <span class="s">&#39;USER&#39;</span><span class="p">:</span> <span class="s">&#39;postgres_user&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s">&#39;s3krit&#39;</span>
+    <span class="p">},</span>
+    <span class="s">&#39;users&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;NAME&#39;</span><span class="p">:</span> <span class="s">&#39;user_data&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;django.db.backends.mysql&#39;</span><span class="p">,</span>
+        <span class="s">&#39;USER&#39;</span><span class="p">:</span> <span class="s">&#39;mysql_user&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s">&#39;priv4te&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h1>Múltiplos bancos de dados<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">QuerySet.using()</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="s">&#39;users&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">Model.save(using='db')</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;flavioamieiro&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="s">&#39;users&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Database routers</p>
+<blockquote>
+<p>Classes que definem quatro métodos:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">db_for_read</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">db_for_write</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">allow_relation</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">allow_syncdb</span></tt></li>
+</ul>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="validacao-de-models">
+<h1>Validação de models<a class="headerlink" href="#validacao-de-models" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Validação de campos específicos</li>
+</ul>
+<ul class="simple">
+<li>Validação de todo o model</li>
+</ul>
+<ul class="simple">
+<li>Validação de unicidade de um campo</li>
+</ul>
+<ul class="simple">
+<li>Usado pelo ModelForm</li>
+</ul>
+<ul class="simple">
+<li>Não é chamado automaticamente por <tt class="docutils literal"><span class="pre">Model.save()</span></tt></li>
+</ul>
+</div>
+<div class="section" id="framework-de-mensagens">
+<h1>Framework de mensagens<a class="headerlink" href="#framework-de-mensagens" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Mensagens baseadas em cookies ou em sessões</li>
+</ul>
+<ul class="simple">
+<li>Diferentes níveis de mensagens</li>
+</ul>
+<ul class="simple">
+<li>É possível enviar mensagens para usuários não autenticados</li>
+</ul>
+</div>
+<div class="section" id="protecao-contra-csrf">
+<h1>Proteção contra CSRF<a class="headerlink" href="#protecao-contra-csrf" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.views.decorators.csrf</span> <span class="kn">import</span> <span class="n">csrf_protect</span>
+
+<span class="nd">@csrf_protect</span>
+<span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;form action=&quot;.&quot; method=&quot;post&quot;&gt;</span>
+<span class="x">    </span><span class="cp">{%</span> <span class="k">csrf_token</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">    &lt;input type=&quot;text&quot;&gt;</span>
+<span class="x">&lt;/form&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h1>Framework de mensagens<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">messages</span>
+
+<span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">&#39;Inscreva-se na pythoncampus&#39;</span><span class="p">)</span>
+    <span class="c"># ...</span>
+</pre></div>
+</div>
+<div class="highlight-django"><div class="highlight"><pre><span class="x"># template.html</span>
+<span class="cp">{%</span> <span class="k">if</span> <span class="nv">messages</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">    &lt;ul class=&quot;messages&quot;&gt;</span>
+<span class="x">        </span><span class="cp">{%</span> <span class="k">for</span> <span class="nv">message</span> <span class="k">in</span> <span class="nv">messages</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">            &lt;li&gt;</span><span class="cp">{{</span> <span class="nv">message</span> <span class="cp">}}</span><span class="x">&lt;/li&gt;</span>
+<span class="x">        </span><span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">    &lt;/ul&gt;</span>
+<span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span><span class="x"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mudancas-no-contrib-auth">
+<h1>Mudanças no contrib.auth<a class="headerlink" href="#mudancas-no-contrib-auth" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Permissões por objeto</li>
+</ul>
+<ul class="simple">
+<li>Permissão para usuários anônimos</li>
+</ul>
+<ul class="simple">
+<li>Nomes de usuários aceitam mais caracteres</li>
+</ul>
+</div>
+<div class="section" id="templatetag-if-mais-esperta">
+<h1>Templatetag &#8216;if&#8217; mais esperta<a class="headerlink" href="#templatetag-if-mais-esperta" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-django"><div class="highlight"><pre><span class="x"># Django 1.1</span>
+<span class="cp">{%</span> <span class="k">ifnotequal</span> <span class="nv">a</span> <span class="nv">b</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x"> ...</span>
+<span class="cp">{%</span> <span class="k">endifnotequal</span> <span class="cp">%}</span><span class="x"></span>
+</pre></div>
+</div>
+<div class="highlight-django"><div class="highlight"><pre><span class="x"># Django 1.2</span>
+<span class="cp">{%</span> <span class="k">if</span> <span class="nv">a</span> <span class="p">!</span><span class="o">=</span> <span class="nv">b</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x"> ...</span>
+<span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span><span class="x"></span>
+</pre></div>
+</div>
+<p>operadores suportados:</p>
+<div class="highlight-python"><pre>==, !=, &lt;, &gt;, &lt;=, &gt;=, in, not in</pre>
+</div>
+</div>
+<div class="section" id="mudancas-no-admin">
+<h1>Mudanças no admin<a class="headerlink" href="#mudancas-no-admin" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Jquery</li>
+</ul>
+<ul class="simple">
+<li>Campos somente leitura</li>
+</ul>
+</div>
+<div class="section" id="e-mais">
+<h1>E mais ...<a class="headerlink" href="#e-mais" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Backends de e-mail</li>
+</ul>
+<ul class="simple">
+<li>Cache de templates</li>
+</ul>
+<ul class="simple">
+<li>Fixtures com &#8216;Natural keys&#8217;</li>
+</ul>
+<ul class="simple">
+<li>Fail Fast para testes</li>
+</ul>
+<ul class="simple">
+<li>BigIntegerField</li>
+</ul>
+<ul class="simple">
+<li>Melhorias na localização</li>
+</ul>
+<ul class="simple">
+<li>Realce de sintaxe nos comandos do django-admin</li>
+</ul>
+<ul class="simple">
+<li>Feeds podem ser usados diretos como views</li>
+</ul>
+</div>
+<div class="section" id="saiba-mais">
+<h1>Saiba Mais<a class="headerlink" href="#saiba-mais" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="http://docs.djangoproject.com/en/dev/releases/1.2/">http://docs.djangoproject.com/en/dev/releases/1.2/</a></li>
+</ul>
+<ul class="simple">
+<li><a class="reference external" href="http://djangoadvent.com/">http://djangoadvent.com/</a></li>
+</ul>
+<ul class="simple">
+<li><a class="reference external" href="http://www.github.com/django/django">http://www.github.com/django/django</a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Novidades do Django 1.2</a></li>
+<li><a class="reference external" href="#multiplos-bancos-de-dados">Múltiplos bancos de dados</a></li>
+<li><a class="reference external" href="#id1">Múltiplos bancos de dados</a></li>
+<li><a class="reference external" href="#id2">Múltiplos bancos de dados</a></li>
+<li><a class="reference external" href="#validacao-de-models">Validação de models</a></li>
+<li><a class="reference external" href="#framework-de-mensagens">Framework de mensagens</a></li>
+<li><a class="reference external" href="#protecao-contra-csrf">Proteção contra CSRF</a></li>
+<li><a class="reference external" href="#id3">Framework de mensagens</a></li>
+<li><a class="reference external" href="#mudancas-no-contrib-auth">Mudanças no contrib.auth</a></li>
+<li><a class="reference external" href="#templatetag-if-mais-esperta">Templatetag &#8216;if&#8217; mais esperta</a></li>
+<li><a class="reference external" href="#mudancas-no-admin">Mudanças no admin</a></li>
+<li><a class="reference external" href="#e-mais">E mais ...</a></li>
+<li><a class="reference external" href="#saiba-mais">Saiba Mais</a></li>
+</ul>
+
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/slides.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">Novidades do Django 1.2 v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Flávio Amieiro.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.5.
+    </div>
+  </body>
+</html>

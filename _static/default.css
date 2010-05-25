@@ -819,7 +819,7 @@
     }
 } /* end @media all */
 
-@media projection {
+@media print, projection {
 
     .section {
         page-break-after: always;
@@ -830,9 +830,6 @@
         font-size: 100%;
     }
 
-}
-
-@media print, projection {
     div.document,
     div.documentwrapper,
     div.bodywrapper {
@@ -852,5 +849,14 @@
     #top-link {
         display: none;
     }
+
+    li {
+        padding: 5px;
+    }
+}
+
+@page {
+    size: a5 landscape;
+    margin: 1cm;
 }
 

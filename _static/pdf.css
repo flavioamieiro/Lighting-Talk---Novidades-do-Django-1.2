@@ -819,7 +819,7 @@ form.comment textarea {
 
 
 .section {
-    page-break-before: always;
+    page-break-after: always;
     font-size: 150%;
 }
 
